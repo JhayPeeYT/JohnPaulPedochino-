@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LibraSys — Modern Library UI (Light + Dark)</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========================
+       Variables & Base Styles
+       ======================== */
+    :root{
+      --bg: #fafafa;                 /* light background */
+      --card: rgba(255,255,255,0.75);
+      --glass-border: rgba(16,24,40,0.06);
+      --muted: #475569;
+      --text: #0f172a;
+      --accent: 59,130,246;          /* blue (r,g,b) */
+      --accent-2: 99,102,241;
+      --radius: 14px;
+      --glass-blur: 10px;
+      --transition: 280ms cubic-bezier(.2,.9,.3,1);
+    }
+
+    [data-theme="dark"]{
+      --bg: #0b1220;
+      --card: rgba(10,14,20,0.5);
+      --glass-border: rgba(255,255,255,0.04);
+      --muted: #94a3b8;
+      --text: #e6eef8;
+      --accent: 96,165,250;          /* lighter blue for dark theme */
+      --accent-2: 110,231,183;
+      --glass-blur: 14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    a{color:inherit;text-decoration:none}
+    button{font-family:inherit}
+
+    /* =============
+       BACKDROP ART
+       ============= */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      background:
+        radial-gradient(800px 400px at 10% 20%, rgba(99,102,241,0.08), transparent 10%),
+        radial-gradient(600px 300px at 90% 80%, rgba(59,130,246,0.06), transparent 12%),
+        linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2));
+      transition:background var(--transition);
+      pointer-events:none;
+    }
+    [data-theme="dark"] body::before{
+      background:
+        radial-gradient(700px 350px at 10% 20%, rgba(96,165,250,0.05), transparent 10%),
+        radial-gradient(500px 260px at 90% 70%, rgba(110,231,183,0.03), transparent 12%),
+        linear-gradient(180deg, rgba(5,8,12,0.6), rgba(3,6,10,0.8));
+    }
+
+    /* ===========
+       LAYOUT
+       =========== */
+    .container{max-width:1200px;margin:36px auto;padding:22px;display:grid;grid-template-columns:280px 1fr;gap:20px}
+    @media (max-width:920px){ .container{grid-template-columns:1fr; padding:16px;margin:18px auto} }
+
+    /* ========
+       SIDEBAR
+       ======== */
+    .sidebar{
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+      border:1px solid var(--glass-border);
+      padding:18px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+      backdrop-filter: blur(var(--glass-blur));
+      transition:all var(--transition);
+      min-height: 520px;
+    }
+    [data-theme="dark"] .sidebar{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:56px;height:56px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(var(--accent),0.95), rgba(var(--accent-2),0.95));
+      display:flex;align-items:center;justify-content:center;color:#04202a;font-weight:700;font-size:18px;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.12);
+    }
+    .brand h1{font-size:16px;margin:0}
+    .brand p{margin:3px 0 0 0;color:var(--muted);font-size:13px}
+
+    nav.nav{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+    .nav button{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:transparent;border:0;color:var(--text);text-align:left;cursor:pointer;transition:all var(--transition);
+    }
+    .nav button:hover{transform:translateX(6px);background:rgba(59,130,246,0.06)}
+    .nav button.active{background:linear-gradient(90deg, rgba(var(--accent),0.08), rgba(var(--accent-2),0.04));box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+
+    .sidebar .meta{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* =========
+       HEADER AREA
+       ========= */
+    .header{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      margin-bottom:14px;
+    }
+    .search{
+      width:100%;max-width:560px;display:flex;gap:8px;align-items:center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+      border:1px solid var(--glass-border);border-radius:12px;padding:10px 12px;
+      backdrop-filter: blur(calc(var(--glass-blur) - 2px));
+      transition:all 220ms;
+    }
+    [data-theme="dark"] .search{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+    .search input{border:0;background:transparent;outline:none;font-size:14px;color:var(--text);width:100%}
+    .actions{display:flex;gap:10px;align-items:center}
+
+    .icon-btn{
+      border:0;background:transparent;padding:8px;border-radius:10px;cursor:pointer;color:var(--muted);
+      transition:all var(--transition);
+    }
+    .icon-btn:hover{transform:translateY(-3px);color:var(--text)}
+
+    .avatar{
+      width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background: linear-gradient(135deg, rgba(var(--accent),0.85), rgba(var(--accent-2),0.85));color:#04202a;font-weight:700;
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    /* ========
+       CARDS GRID
+       ======== */
+    .grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;
+    }
+    @media (max-width:900px){ .grid{grid-template-columns:repeat(1,1fr)} }
+    .card{
+      border-radius:12px;padding:14px;background:var(--card);border:1px solid var(--glass-border);
+      box-shadow:0 8px 30px rgba(2,6,23,0.06);backdrop-filter: blur(var(--glass-blur));
+      transition:transform var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.08)}
+
+    .card h3{margin:0;font-size:13px;color:var(--muted)}
+    .card .big{font-size:22px;font-weight:700;margin-top:8px}
+
+    /* ========
+       PANELS
+       ======== */
+    .panels{display:flex;gap:14px}
+    .left{flex:2}
+    .right{flex:1}
+    @media (max-width:920px){ .panels{flex-direction:column} .right{order:2} .left{order:1} }
+
+    .panel{
+      border-radius:12px;padding:14px;background:var(--card);border:1px solid var(--glass-border);backdrop-filter: blur(var(--glass-blur));
+      box-shadow:0 10px 30px rgba(2,6,23,0.06);
+      transition:transform var(--transition), box-shadow var(--transition);
+    }
+
+    .panel h2{margin:0 0 8px 0}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:10px 8px;border-bottom:1px dashed rgba(0,0,0,0.04);color:var(--muted)}
+    th{font-weight:600;font-size:13px;color:var(--muted)}
+    td strong{color:var(--text)}
+
+    /* ========
+       FORMS & MODALS
+       ======== */
+    .btn{
+      background: linear-gradient(90deg, rgba(var(--accent),0.95), rgba(var(--accent-2),0.95));
+      color:#04202a;border:0;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer;transition:all var(--transition);
+      box-shadow: 0 8px 18px rgba(59,130,246,0.12);
+    }
+    .btn.ghost{background:transparent;border:1px solid var(--glass-border;color:var(--text));box-shadow:none;color:var(--text)}
+    .btn:active{transform:translateY(1px)}
+
+    .form-row{display:flex;gap:10px}
+    .input{
+      flex:1;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:transparent;color:var(--text);outline:none;
+    }
+    .label{font-size:13px;color:var(--muted);margin-bottom:6px;display:block}
+
+    /* modal backdrop */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.35);display:none;align-items:center;justify-content:center;z-index:60;backdrop-filter: blur(2px);}
+    .modal{width:720px;max-width:94%;border-radius:12px;padding:18px;background:var(--card);border:1px solid var(--glass-border)}
+    .modal .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .close-btn{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px}
+
+    /* ===================
+       LOGIN / TRANSITIONS
+       =================== */
+    .auth-wrap{
+      display:grid;place-items:center;min-height:calc(100vh - 40px);padding:20px;
+    }
+    .auth-card{
+      width:920px;max-width:98%;display:flex;gap:18px;border-radius:16px;padding:20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.78));
+      border:1px solid var(--glass-border);
+      box-shadow: 0 20px 60px rgba(2,6,23,0.07);
+      backdrop-filter: blur(calc(var(--glass-blur) + 2px));
+      transition:all var(--transition);
+    }
+    [data-theme="dark"] .auth-card{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
+
+    .auth-left{flex:1;padding:18px;display:flex;flex-direction:column;justify-content:center}
+    .auth-right{flex:1;padding:18px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+
+    .small{font-size:13px;color:var(--muted)}
+
+    /* tiny helpers */
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.03);font-weight:600;color:var(--muted)}
+    .hidden{display:none !important}
+
+    /* subtle entrance */
+    .fade-up{opacity:0;transform:translateY(8px);animation:fadeUp 520ms forwards}
+    .fade-up.delay{animation-delay:90ms}
+    @keyframes fadeUp{to{opacity:1;transform:none}}
+
+    /* small screens adjustments */
+    @media (max-width:720px){
+      .auth-card{flex-direction:column;padding:12px}
+      .auth-left{order:2}
+      .auth-right{order:1}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Root theme attribute -->
+  <script>
+    // Initialize theme from localStorage (or prefer system)
+    (function(){
+      const saved = localStorage.getItem('libra_theme');
+      if(saved) document.documentElement.setAttribute('data-theme', saved);
+      else {
+        // optional: default to light; user wanted white default
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <!-- MAIN APP: we'll toggle between "auth" and "app" states -->
+  <div id="app-root">
+
+    <!-- ===== SIGN-IN / AUTH SCREEN (default shown until signed-in) ===== -->
+    <div id="auth-screen" class="auth-wrap">
+      <div class="auth-card fade-up">
+        <!-- Left: Marketing / art -->
+        <div class="auth-left">
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
+            <div class="logo" style="width:48px;height:48px;border-radius:12px">📚</div>
+            <div>
+              <h1 style="margin:0;font-size:18px">LibraSys</h1>
+              <div class="small muted">Modern Library Management — Static UI</div>
+            </div>
+          </div>
+
+          <h2 style="margin-top:18px;margin-bottom:6px">Organize. Borrow. Discover.</h2>
+          <p class="small muted" style="line-height:1.5">Beautiful, minimal, and responsive interface with glass blur and smooth animations. This is a simulated sign-in — form submission happens locally (no backend).</p>
+
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <div class="pill">HCI Midterm</div>
+            <div class="pill">Static UI</div>
+            <div class="pill">Responsive</div>
+          </div>
+
+          <div style="margin-top:24px">
+            <small class="small muted">Demo credentials (optional): <strong>admin / password</strong> — or enter any non-empty username & password to sign in.</small>
+          </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="auth-right">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h3 style="margin:0">Sign in to your account</h3>
+              <div class="small muted">Welcome back — sign in to continue</div>
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="icon-btn" id="themeToggle" title="Toggle dark mode">🌓</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px">
+            <div>
+              <label class="label">Username</label>
+              <input id="username" class="input" placeholder="e.g. admin" />
+            </div>
+            <div>
+              <label class="label">Password</label>
+              <input id="password" type="password" class="input" placeholder="••••••••" />
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <label style="display:flex;gap:8px;align-items:center"><input id="remember" type="checkbox" /> <span class="small muted">Remember me</span></label>
+              <a href="#" class="small muted" onclick="alert('Forgot password is a static demo')">Forgot?</a>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="signInBtn" class="btn">Sign In</button>
+              <button id="demoBtn" class="btn" style="background:linear-gradient(90deg, rgba(100,116,255,0.12), rgba(59,130,246,0.06));color:var(--text);box-shadow:none" onclick="fillDemo()">Use demo</button>
+            </div>
+
+            <div id="authMessage" class="small muted" style="margin-top:6px;min-height:18px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== APP / DASHBOARD (hidden until login) ===== -->
+    <div id="app-screen" class="hidden" aria-hidden="true" style="padding-bottom:60px">
+      <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="logo">📚</div>
+            <div>
+              <h1>LibraSys</h1>
+              <p>Library Dashboard</p>
+            </div>
+          </div>
+
+          <nav class="nav" id="sidebarNav">
+            <button data-view="dashboard" class="active">🏠 Dashboard</button>
+            <button data-view="books">📚 Books</button>
+            <button data-view="borrowers">👥 Borrowers</button>
+            <button data-view="transactions">🔁 Transactions</button>
+            <button data-view="reports">📊 Reports</button>
+            <button data-view="users">🧑‍💼 Users</button>
+            <button data-view="settings">⚙️ Settings</button>
+          </nav>
+
+          <div class="meta" style="margin-top:18px">
+            <div class="small muted">Signed in as <strong id="navUsername">User</strong></div>
+            <div style="height:8px"></div>
+            <button id="signOutBtn" class="icon-btn" style="padding:8px 10px;border-radius:8px">Sign out</button>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-area">
+          <div class="header">
+            <div style="display:flex;gap:12px;align-items:center;width:100%">
+              <div class="search" role="search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:0.72"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
+                <input id="globalSearch" placeholder="Search books, borrowers, transactions..." />
+              </div>
+
+              <div style="margin-left:auto" class="small muted">Welcome, <strong id="welcomeName">User</strong></div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" id="addBookTop">+ Add Book</button>
+              <button class="icon-btn" id="darkToggle" title="Toggle Dark/Light">🌗</button>
+              <div class="avatar" id="miniAvatar">JP</div>
+            </div>
+          </div>
+
+          <!-- Cards -->
+          <div class="grid">
+            <div class="card">
+              <h3>Total Books</h3>
+              <div class="big">3,482</div>
+              <div class="small muted">All categories</div>
+            </div>
+            <div class="card">
+              <h3>Active Borrowers</h3>
+              <div class="big">1,040</div>
+              <div class="small muted">Students & staff</div>
+            </div>
+            <div class="card">
+              <h3>Borrowed Today</h3>
+              <div class="big">24</div>
+              <div class="small muted">Transactions</div>
+            </div>
+          </div>
+
+          <!-- Main Panels -->
+          <div class="panels" style="margin-top:14px">
+            <div class="left">
+              <div class="panel" id="panelTransactions">
+                <h2>Recent Transactions</h2>
+                <table>
+                  <thead><tr><th>Txn ID</th><th>Book</th><th>Borrower</th><th>Due Date</th><th>Status</th></tr></thead>
+                  <tbody id="txnBody">
+                    <tr><td>T-1001</td><td><strong>Intro to Algorithms</strong></td><td>Jane D.</td><td>2025-10-29</td><td class="muted">Borrowed</td></tr>
+                    <tr><td>T-1002</td><td><strong>Network Essentials</strong></td><td>Mark P.</td><td>2025-10-25</td><td style="color:crimson;font-weight:700">Overdue</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="panel" style="margin-top:12px" id="panelBooks">
+                <h2>Book Management</h2>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div class="small muted">Manage book records</div>
+                  <div style="display:flex;gap:8px">
+                    <input id="bookFilter" class="input" placeholder="Filter by title or author..." style="max-width:260px" />
+                    <button class="btn" id="openAddBook">+ Add</button>
+                  </div>
+                </div>
+
+                <table>
+                  <thead><tr><th>ISBN</th><th>Title</th><th>Author</th><th>Status</th><th>Action</th></tr></thead>
+                  <tbody id="booksTable">
+                    <tr><td>978-0262033848</td><td><strong>Intro to Algorithms</strong></td><td>Thomas H.</td><td>Available</td><td><button class="icon-btn" onclick="editRow(this)">✏️</button></td></tr>
+                    <tr><td>978-0131103627</td><td><strong>Database Systems</strong></td><td>Raghu R.</td><td>Borrowed</td><td><button class="icon-btn" onclick="editRow(this)">✏️</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <aside class="right">
+              <div class="panel">
+                <h3>Quick Actions</h3>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                  <button class="btn" onclick="openModal('borrow')">Borrow Book</button>
+                  <button class="btn" onclick="openModal('return')">Return Book</button>
+                  <button class="btn" id="exportBtn" style="background:linear-gradient(90deg, rgba(99,102,241,0.12), rgba(59,130,246,0.06));color:var(--text);box-shadow:none">Export CSV</button>
+                </div>
+              </div>
+
+              <div class="panel" style="margin-top:12px">
+                <h3>Top Borrowed</h3>
+                <ol style="margin:8px 0 0 16px;color:var(--muted)">
+                  <li>Intro to Algorithms</li>
+                  <li>Database Systems</li>
+                  <li>Operating Systems</li>
+                </ol>
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 id="modalTitle">Modal</h3>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody" class="modal-grid">
+        <!-- dynamic -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===========================
+       THEME / DARK MODE TOGGLING
+       =========================== */
+    const themeToggle = document.getElementById('themeToggle');
+    const darkToggle = document.getElementById('darkToggle');
+
+    function setTheme(name){
+      document.documentElement.setAttribute('data-theme', name);
+      localStorage.setItem('libra_theme', name);
+    }
+    // initialize icons and buttons
+    themeToggle?.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(cur === 'light' ? 'dark' : 'light');
+    });
+    darkToggle?.addEventListener('click', () => themeToggle?.click());
+
+    /* ===========================
+       AUTH / SIGNIN FLOW (SIM)
+       =========================== */
+    const authScreen = document.getElementById('auth-screen');
+    const appScreen = document.getElementById('app-screen');
+    const signInBtn = document.getElementById('signInBtn');
+    const demoBtn = document.getElementById('demoBtn');
+    const authMessage = document.getElementById('authMessage');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    function showApp(username){
+      // set username displays
+      document.getElementById('navUsername').textContent = username;
+      document.getElementById('welcomeName').textContent = username;
+      document.getElementById('miniAvatar').textContent = username.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+
+      // hide auth, show app
+      authScreen.classList.add('hidden');
+      appScreen.classList.remove('hidden');
+      appScreen.setAttribute('aria-hidden', 'false');
+
+      // small entrance animation
+      appScreen.scrollIntoView({behavior:'smooth'});
+    }
+
+    function signIn(){
+      const u = usernameInput.value.trim();
+      const p = passwordInput.value.trim();
+      if(!u || !p){
+        authMessage.textContent = 'Please enter username and password.';
+        return;
+      }
+      // demo: accept admin/password quickly, or any non-empty creds
+      authMessage.textContent = 'Signing in...';
+      setTimeout(()=>{
+        authMessage.textContent = '';
+        // optional: remember
+        if(document.getElementById('remember').checked) localStorage.setItem('libra_user', u);
+        showApp(u);
+      }, 600);
+    }
+
+    function fillDemo(){
+      usernameInput.value = 'admin';
+      passwordInput.value = 'password';
+      authMessage.textContent = 'Filled demo credentials — click Sign In';
+    }
+
+    signInBtn?.addEventListener('click', signIn);
+    demoBtn?.addEventListener('click', fillDemo);
+
+    // If previously signed-in (remember), auto sign-in
+    const remembered = localStorage.getItem('libra_user');
+    if(remembered){
+      usernameInput.value = remembered;
+      passwordInput.value = 'password';
+      setTimeout(()=>signIn(), 350);
+    }
+
+    // sign out
+    document.getElementById('signOutBtn')?.addEventListener('click', ()=>{
+      localStorage.removeItem('libra_user');
+      appScreen.classList.add('hidden');
+      authScreen.classList.remove('hidden');
+      authMessage.textContent = 'Signed out';
+      usernameInput.value = '';
+      passwordInput.value = '';
+      document.documentElement.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    /* ======================
+       VIEW ROUTING (simple)
+       ====================== */
+    const sidebarButtons = document.querySelectorAll('#sidebarNav button');
+    const views = {
+      dashboard: () => { document.getElementById('panelTransactions').scrollIntoView({behavior:'smooth'}) },
+      books: () => { document.getElementById('panelBooks').scrollIntoView({behavior:'smooth'}) },
+      borrowers: () => { alert('Borrowers view (static) — design placeholder') },
+      transactions: () => { alert('Transactions view (static) — design placeholder') },
+      reports: () => { alert('Reports view (static) — design placeholder') },
+      users: () => { alert('Users view (static) — design placeholder') },
+      settings: () => { alert('Settings view (static) — design placeholder') }
+    };
+    sidebarButtons.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        sidebarButtons.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const v = b.dataset.view;
+        if(views[v]) views[v]();
+      });
+    });
+
+    /* =========================
+       MODALS & SIMPLE ACTIONS
+       ========================= */
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
+    function openModal(kind){
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
+      if(kind === 'borrow'){
+        modalTitle.textContent = 'Borrow Book';
+        modalBody.innerHTML = `
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label class="label">Borrower ID</label>
+            <input class="input" id="m_bid" placeholder="B-1001" />
+            <label class="label">Book (ISBN or Title)</label>
+            <input class="input" id="m_book" placeholder="978-... or title" />
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input class="input" id="m_borrowed" placeholder="Borrowed On (YYYY-MM-DD)" value="${new Date().toISOString().slice(0,10)}" />
+              <input class="input" id="m_due" placeholder="Due Date (YYYY-MM-DD)" />
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+              <button class="btn" onclick="simulate('borrow')">Confirm</button>
+              <button class="btn" onclick="closeModal()" style="background:transparent;border:1px solid var(--glass-border);box-shadow:none">Cancel</button>
+            </div>
+          </div>
+        `;
+      } else if(kind === 'return'){
+        modalTitle.textContent = 'Return Book';
+        modalBody.innerHTML = `
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label class="label">Transaction ID</label>
+            <input class="input" id="r_txn" placeholder="T-1001" />
+            <label class="label">Return Date</label>
+            <input class="input" id="r_date" value="${new Date().toISOString().slice(0,10)}" />
+            <label class="label">Fine (₱)</label>
+            <input class="input" id="r_fine" placeholder="0" />
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+              <button class="btn" onclick="simulate('return')">Process</button>
+              <button class="btn" onclick="closeModal()" style="background:transparent;border:1px solid var(--glass-border);box-shadow:none">Cancel</button>
+            </div>
+          </div>
+        `;
+      } else if(kind === 'addBook'){
+        modalTitle.textContent = 'Add Book';
+        modalBody.innerHTML = `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div><label class="label">ISBN</label><input class="input" id="b_isbn" placeholder="978-..." /></div>
+            <div><label class="label">Category</label><input class="input" id="b_cat" placeholder="Category" /></div>
+            <div style="grid-column:1/3"><label class="label">Title</label><input class="input" id="b_title" placeholder="Book title" /></div>
+            <div style="grid-column:1/3"><label class="label">Author</label><input class="input" id="b_author" placeholder="Author name" /></div>
+            <div style="grid-column:1/3;display:flex;justify-content:flex-end">
+              <button class="btn" onclick="saveBook()">Save</button>
+            </div>
+          </div>
+        `;
+      } else {
+        modalTitle.textContent = 'Info';
+        modalBody.innerHTML = `<div class="small muted">No content</div>`;
+      }
+    }
+
+    function closeModal(){
+      modalBackdrop.style.display = 'none';
+      modalBackdrop.setAttribute('aria-hidden','true');
+      modalBody.innerHTML = '';
+    }
+
+    function simulate(kind){
+      if(kind === 'borrow'){
+        alert('Borrowed (static demo). The UI simulates the transaction.');
+        closeModal();
+      } else {
+        alert('Return processed (static demo).');
+        closeModal();
+      }
+    }
+
+    // wire add buttons
+    document.getElementById('openAddBook').addEventListener('click', ()=>openModal('addBook'));
+    document.getElementById('addBookTop').addEventListener('click', ()=>openModal('addBook'));
+
+    function saveBook(){
+      const isbn = document.getElementById('b_isbn').value || 'N/A';
+      const title = document.getElementById('b_title').value || 'Untitled';
+      const author = document.getElementById('b_author').value || '-';
+      const tbody = document.getElementById('booksTable');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${isbn}</td><td><strong>${title}</strong></td><td>${author}</td><td>Available</td><td><button class="icon-btn" onclick="editRow(this)">✏️</button></td>`;
+      tbody.prepend(tr);
+      alert('Book added (static)');
+      closeModal();
+    }
+
+    function editRow(btn){
+      const tr = btn.closest('tr');
+      const cells = tr.querySelectorAll('td');
+      const isbn = cells[0].textContent;
+      const title = cells[1].textContent;
+      const author = cells[2].textContent;
+      openModal('addBook');
+      // small prefill after modal opens
+      setTimeout(()=>{
+        document.getElementById('b_isbn').value = isbn;
+        document.getElementById('b_title').value = title;
+        document.getElementById('b_author').value = author;
+      }, 120);
+    }
+
+    /* =========================
+       SEARCH (simple filtering)
+       ========================= */
+    document.getElementById('globalSearch').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase();
+      if(!q) return document.querySelectorAll('#booksTable tr, #txnBody tr').forEach(r=>r.style.display='');
+      document.querySelectorAll('#booksTable tr, #txnBody tr').forEach(row=>{
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+
+    document.getElementById('bookFilter').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('#booksTable tr').forEach(row=>{
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+
+    /* =====================
+       EXPORT CSV (simple)
+       ===================== */
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const rows = Array.from(document.querySelectorAll('#booksTable tr')).map(tr=>{
+        return Array.from(tr.querySelectorAll('td')).map(td => td.textContent.replace(/\n/g,' ').trim());
+      });
+      const csv = [['ISBN','Title','Author','Status'], ...rows].map(r=>r.map(c=>`"${c.replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'books_export.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    /* ==================
+       SMALL UX HELPERS
+       ================== */
+    // Close modal when clicking backdrop
+    document.getElementById('modalBackdrop').addEventListener('click', (e)=>{
+      if(e.target === e.currentTarget) closeModal();
+    });
+
+    // allow enter to sign in
+    passwordInput.addEventListener('keyup', (e)=>{ if(e.key==='Enter') signIn(); });
+    usernameInput.addEventListener('keyup', (e)=>{ if(e.key==='Enter') passwordInput.focus(); });
+
+    // auto focus username
+    usernameInput.focus();
+
+  </script>
+</body>
+</html>
